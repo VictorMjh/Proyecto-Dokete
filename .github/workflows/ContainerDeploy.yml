@@ -1,4 +1,4 @@
-name: Deploy Ubuntu Server and Manage Docker Containers
+name: Deploy Docker
 on:
   workflow_dispatch:
   
@@ -6,12 +6,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest  # Esta es la máquina donde se ejecuta el job
 steps:
-      - name: Check out the code
-        uses: actions/checkout@v2  # Clona el código fuente del repositorio
-- name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Usa el secreto SSH creado
-- name: Connect to Ubuntu Server and deploy
-        run: |
-          ssh -o StrictHostKeyChecking=no vic@192.168.0.151 'bash -s' deploy_script.sh
+  - name: Check out the code
+    uses: actions/checkout@v2  # Clona el código fuente del repositorio
+  - name: Set up SSH
+    uses: webfactory/ssh-agent@v0.5.3
+    with:
+      ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Usa el secreto SSH creado
+  - name: Connect to Ubuntu Server and deploy
+    run: |
+      ssh -o StrictHostKeyChecking=no vic@192.168.0.151 'bash -s' deploy_script.sh
