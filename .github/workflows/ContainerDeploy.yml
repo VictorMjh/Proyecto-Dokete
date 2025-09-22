@@ -1,10 +1,7 @@
 name: Deploy Ubuntu Server and Manage Docker Containers
 on:
-  push:
-    branches:
-      - main  # O la rama que prefieras para activar el workflow
-    paths:
-      - 'contenedores/contenedor-01.yml'      # Solo si cambian archivos en esta ruta
+  workflow_dispatch:
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest  # Esta es la máquina donde se ejecuta el job
