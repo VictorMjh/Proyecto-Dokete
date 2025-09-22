@@ -6,15 +6,15 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest  # Esta es la máquina donde se ejecuta el job
-steps:
-      - name: Check out the code
-        uses: actions/checkout@v2  # Clona el código fuente del repositorio
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          host: sylvahabitat.duckdns.com
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Usa el secreto SSH creado
-          port: 5122 # puerto abierto en el router y nateado a 22
-      - name: Connect to Ubuntu Server and deploy
-        run: |
-          ssh -o StrictHostKeyChecking=no vic@192.168.0.151 'bash -s' deploy_script.sh
+  steps:
+    - name: Check out the code
+      uses: actions/checkout@v2  # Clona el código fuente del repositorio
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        host: sylvahabitat.duckdns.com
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Usa el secreto SSH creado
+        port: 5122 # puerto abierto en el router y nateado a 22
+    - name: Connect to Ubuntu Server and deploy
+      run: |
+        ssh -o StrictHostKeyChecking=no -p 5122 vic@sylvahabitat.duckdns.com 'bash -s' < deploy_script.sh
