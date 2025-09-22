@@ -1,27 +1,68 @@
-version: '3'
+version: '3.8'
 
 services:
-  db:
-    image: mariadb
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
-      - db:/var/lib/mysql
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    restart: always
 
   nextcloud:
-    image: nextcloud
-    restart: always
-    ports:
-      - 8080:80
-    volumes:
-      - nextcloud:/var/www/html
+    image: nextcloud:latest
     depends_on:
-      - db
+      - db_nextcloud
+    environment:
+      - MYSQL_PASSWORD=yourpassword
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db_nextcloud
+    volumes:
+      - nextcloud_data:/var/www/html
+    restart: always
+
+  db_nextcloud:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_PASSWORD=yourpassword
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    volumes:
+      - db_nextcloud_data:/var/lib/mysql
+    restart: always
+
+  homeassistant:
+    image: homeassistant/home-assistant:stable
+    volumes:
+      - ./homeassistant_config:/config
+    network_mode: host
+    restart: always
+
+  plex:
+    image: plexinc/pms-docker:latest
+    environment:
+      - PLEX_CLAIM=claim-token
+      - ADVERTISE_IP=http://your-server-ip:32400/
+    network_mode: host
+    volumes:
+      - ./plex_config:/config
+      - ./plex_transcode:/transcode
+      - ./plex_media:/data
+    restart: always
+
+  retroarch:
+    image: libretro/retroarch:latest
+    # Este contenedor es más experimental, ajusta según uso real
+    ports:
+      - "55355:55355"
+    volumes:
+      - ./retroarch_config:/config
+    restart: always
 
 volumes:
-  db:
-  nextcloud:
+  nextcloud_data:
+  db_nextcloud_data:
