@@ -30,7 +30,7 @@ sudo systemctl enable docker
 
 
 #echo "🚀 Desplegando servicios con Docker Compose..."
-#docker compose -f "$COMPOSE_FILE" up -d --build
+#docker-compose -f "$COMPOSE_FILE" up -d --build
 
 echo "📦 Listado de contenedores activos:"
 docker ps
