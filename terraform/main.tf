@@ -192,15 +192,15 @@ resource "docker_container" "plex" {
 }
 
 # Retroarch
-resource "docker_container" "retroarch" {
-  name    = "retroarch"
-  image   = docker_image.retroarch.image_id
-  restart = "unless-stopped"
-
-  networks_advanced {
-    name = docker_network.proxy_net.name
-  }
-}
+#resource "docker_container" "retroarch" {
+#  name    = "retroarch"
+#  image   = docker_image.retroarch.image_id
+#  restart = "unless-stopped"
+#
+#  networks_advanced {
+#    name = docker_network.proxy_net.name
+#  }
+#}
 
 # Portainer
 resource "docker_container" "portainer" {
