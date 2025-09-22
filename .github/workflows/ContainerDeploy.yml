@@ -14,4 +14,4 @@ steps:
       ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Usa el secreto SSH creado
   - name: Connect to Ubuntu Server and deploy
     run: |
-      ssh -o StrictHostKeyChecking=no vic@192.168.0.151 'bash -s' deploy_script.sh
+      ssh -o StrictHostKeyChecking=no vic@192.168.0.151 'bash -s' Script-DeployContainers.sh
