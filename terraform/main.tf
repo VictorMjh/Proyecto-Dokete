@@ -39,9 +39,9 @@ resource "docker_image" "plex" {
   name = "linuxserver/plex"
 }
 
-resource "docker_image" "retroarch" {
-  name = "es20490446e/retroarch-web"
-}
+#resource "docker_image" "retroarch" {
+#  name = "es20490446e/retroarch-web"
+#}
 
 resource "docker_image" "portainer" {
   name = "portainer/portainer-ce"
@@ -80,7 +80,7 @@ resource "docker_container" "nginx_proxy" {
     docker_container.nextcloud,
     docker_container.homeassistant,
     docker_container.plex,
-    docker_container.retroarch
+    #docker_container.retroarch
   ]
 }
 
