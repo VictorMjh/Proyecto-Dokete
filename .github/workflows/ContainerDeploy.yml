@@ -1,7 +1,7 @@
 name: Deploy Docker
 on:
   workflow_dispatch:
-  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest  # Esta es la máquina donde se ejecuta el job
