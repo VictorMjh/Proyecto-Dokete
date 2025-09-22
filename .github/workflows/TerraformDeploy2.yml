@@ -1,4 +1,4 @@
-name: Deploy Docker Stack with Terraform
+name: Deploy Terraform 2
 on:
   workflow_dispatch:
 
