@@ -58,7 +58,7 @@ resource "docker_image" "watchtower" {
 # Nginx Proxy
 resource "docker_container" "nginx_proxy" {
   name    = "nginx-proxy"
-  image   = docker_image.nginx.latest
+  image   = docker_image.nginx.image_id
   restart = "unless-stopped"
 
   ports {
@@ -87,7 +87,7 @@ resource "docker_container" "nginx_proxy" {
 # MariaDB
 resource "docker_container" "nextcloud_db" {
   name    = "nextcloud-db"
-  image   = docker_image.mariadb.latest
+  image   = docker_image.mariadb.image_id
   restart = "unless-stopped"
 
   env = [
@@ -110,7 +110,7 @@ resource "docker_container" "nextcloud_db" {
 # Nextcloud
 resource "docker_container" "nextcloud" {
   name       = "nextcloud"
-  image      = docker_image.nextcloud.latest
+  image      = docker_image.nextcloud.image_id
   depends_on = [docker_container.nextcloud_db]
   restart    = "unless-stopped"
 
@@ -134,7 +134,7 @@ resource "docker_container" "nextcloud" {
 # Home Assistant
 resource "docker_container" "homeassistant" {
   name       = "homeassistant"
-  image      = docker_image.homeassistant.latest
+  image      = docker_image.homeassistant.image_id
   restart    = "unless-stopped"
   privileged = true
 
@@ -157,7 +157,7 @@ resource "docker_container" "homeassistant" {
 # Plex
 resource "docker_container" "plex" {
   name    = "plex"
-  image   = docker_image.plex.latest
+  image   = docker_image.plex.image_id
   restart = "unless-stopped"
 
   env = [
@@ -194,7 +194,7 @@ resource "docker_container" "plex" {
 # Retroarch
 resource "docker_container" "retroarch" {
   name    = "retroarch"
-  image   = docker_image.retroarch.latest
+  image   = docker_image.retroarch.image_id
   restart = "unless-stopped"
 
   networks_advanced {
@@ -205,7 +205,7 @@ resource "docker_container" "retroarch" {
 # Portainer
 resource "docker_container" "portainer" {
   name    = "portainer"
-  image   = docker_image.portainer.latest
+  image   = docker_image.portainer.image_id
   restart = "unless-stopped"
 
   ports {
@@ -231,7 +231,7 @@ resource "docker_container" "portainer" {
 # Watchtower
 resource "docker_container" "watchtower" {
   name    = "watchtower"
-  image   = docker_image.watchtower.latest
+  image   = docker_image.watchtower.image_id
   restart = "unless-stopped"
 
   volumes {
