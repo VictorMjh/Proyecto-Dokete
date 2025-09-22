@@ -17,6 +17,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Usa el secreto SSH creado
 
-      - name: Connect to Ubuntu Server and deploy
+      - name: Connect with deply user to Ubuntu Server and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < deploy_script.sh
