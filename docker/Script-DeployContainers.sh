@@ -32,7 +32,7 @@ sudo systemctl enable docker
 
 
 # Ejecutar docker compose con el archivo especificado
-docker compose -f "$COMPOSE_FILE" up -d
+docker-compose -f "$COMPOSE_FILE" up -d
 
 # Mostrar estado
 echo "🚀 Stack desplegado. Contenedores activos:"
