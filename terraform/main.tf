@@ -9,13 +9,16 @@ terraform {
 
 provider "docker" {}
 
-# Docker Network
+# ========================
+# Red Docker
+# ========================
 resource "docker_network" "proxy_net" {
   name = var.network_name
 }
 
-# ========== IMÁGENES ==========
-
+# ========================
+# Imágenes
+# ========================
 resource "docker_image" "nginx" {
   name = "nginx:alpine"
 }
@@ -48,12 +51,14 @@ resource "docker_image" "watchtower" {
   name = "containrrr/watchtower"
 }
 
-# ========== CONTENEDORES ==========
+# ========================
+# Contenedores
+# ========================
 
 # Nginx Proxy
 resource "docker_container" "nginx_proxy" {
-  name   = "nginx-proxy"
-  image  = docker_image.nginx
+  name    = "nginx-proxy"
+  image   = docker_image.nginx.latest
   restart = "unless-stopped"
 
   ports {
@@ -61,9 +66,11 @@ resource "docker_container" "nginx_proxy" {
     external = 80
   }
 
-  volumes = [
-    "${abspath(path.module)}/../docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
-  ]
+  volumes {
+    host_path      = "${abspath(path.module)}/../docker/nginx/nginx.conf"
+    container_path = "/etc/nginx/nginx.conf"
+    read_only      = true
+  }
 
   networks_advanced {
     name = docker_network.proxy_net.name
@@ -79,8 +86,8 @@ resource "docker_container" "nginx_proxy" {
 
 # MariaDB
 resource "docker_container" "nextcloud_db" {
-  name   = "nextcloud-db"
-  image  = docker_image.mariadb
+  name    = "nextcloud-db"
+  image   = docker_image.mariadb.latest
   restart = "unless-stopped"
 
   env = [
@@ -90,9 +97,10 @@ resource "docker_container" "nextcloud_db" {
     "MYSQL_PASSWORD=${var.mysql_password}"
   ]
 
-  volumes = [
-    "${abspath(path.module)}/../docker/nextcloud_db:/var/lib/mysql"
-  ]
+  volumes {
+    host_path      = "${abspath(path.module)}/../docker/nextcloud_db"
+    container_path = "/var/lib/mysql"
+  }
 
   networks_advanced {
     name = docker_network.proxy_net.name
@@ -101,10 +109,10 @@ resource "docker_container" "nextcloud_db" {
 
 # Nextcloud
 resource "docker_container" "nextcloud" {
-  name   = "nextcloud"
-  image  = docker_image.nextcloud
+  name       = "nextcloud"
+  image      = docker_image.nextcloud.latest
   depends_on = [docker_container.nextcloud_db]
-  restart = "unless-stopped"
+  restart    = "unless-stopped"
 
   env = [
     "MYSQL_PASSWORD=${var.mysql_password}",
@@ -113,9 +121,10 @@ resource "docker_container" "nextcloud" {
     "MYSQL_HOST=nextcloud-db"
   ]
 
-  volumes = [
-    "${abspath(path.module)}/../docker/nextcloud_data:/var/www/html"
-  ]
+  volumes {
+    host_path      = "${abspath(path.module)}/../docker/nextcloud_data"
+    container_path = "/var/www/html"
+  }
 
   networks_advanced {
     name = docker_network.proxy_net.name
@@ -124,15 +133,21 @@ resource "docker_container" "nextcloud" {
 
 # Home Assistant
 resource "docker_container" "homeassistant" {
-  name   = "homeassistant"
-  image  = docker_image.homeassistant
-  restart = "unless-stopped"
+  name       = "homeassistant"
+  image      = docker_image.homeassistant.latest
+  restart    = "unless-stopped"
   privileged = true
 
-  volumes = [
-    "${abspath(path.module)}/../docker/homeassistant_config:/config",
-    "/etc/localtime:/etc/localtime:ro"
-  ]
+  volumes {
+    host_path      = "${abspath(path.module)}/../docker/homeassistant_config"
+    container_path = "/config"
+  }
+
+  volumes {
+    host_path      = "/etc/localtime"
+    container_path = "/etc/localtime"
+    read_only      = true
+  }
 
   networks_advanced {
     name = docker_network.proxy_net.name
@@ -141,8 +156,8 @@ resource "docker_container" "homeassistant" {
 
 # Plex
 resource "docker_container" "plex" {
-  name   = "plex"
-  image  = docker_image.plex
+  name    = "plex"
+  image   = docker_image.plex.latest
   restart = "unless-stopped"
 
   env = [
@@ -151,18 +166,25 @@ resource "docker_container" "plex" {
     "VERSION=docker"
   ]
 
-  ports = [
-    {
-      internal = 32400
-      external = 32400
-    }
-  ]
+  ports {
+    internal = 32400
+    external = 32400
+  }
 
-  volumes = [
-    "${abspath(path.module)}/../docker/plex_config:/config",
-    "${abspath(path.module)}/../docker/plex_media:/media",
-    "${abspath(path.module)}/../docker/plex_transcode:/transcode"
-  ]
+  volumes {
+    host_path      = "${abspath(path.module)}/../docker/plex_config"
+    container_path = "/config"
+  }
+
+  volumes {
+    host_path      = "${abspath(path.module)}/../docker/plex_media"
+    container_path = "/media"
+  }
+
+  volumes {
+    host_path      = "${abspath(path.module)}/../docker/plex_transcode"
+    container_path = "/transcode"
+  }
 
   networks_advanced {
     name = docker_network.proxy_net.name
@@ -171,8 +193,8 @@ resource "docker_container" "plex" {
 
 # Retroarch
 resource "docker_container" "retroarch" {
-  name   = "retroarch"
-  image  = docker_image.retroarch
+  name    = "retroarch"
+  image   = docker_image.retroarch.latest
   restart = "unless-stopped"
 
   networks_advanced {
@@ -182,21 +204,24 @@ resource "docker_container" "retroarch" {
 
 # Portainer
 resource "docker_container" "portainer" {
-  name   = "portainer"
-  image  = docker_image.portainer
+  name    = "portainer"
+  image   = docker_image.portainer.latest
   restart = "unless-stopped"
 
-  ports = [
-    {
-      internal = 9000
-      external = 9000
-    }
-  ]
+  ports {
+    internal = 9000
+    external = 9000
+  }
 
-  volumes = [
-    "/var/run/docker.sock:/var/run/docker.sock",
-    "${abspath(path.module)}/../docker/portainer_data:/data"
-  ]
+  volumes {
+    host_path      = "/var/run/docker.sock"
+    container_path = "/var/run/docker.sock"
+  }
+
+  volumes {
+    host_path      = "${abspath(path.module)}/../docker/portainer_data"
+    container_path = "/data"
+  }
 
   networks_advanced {
     name = docker_network.proxy_net.name
@@ -205,13 +230,14 @@ resource "docker_container" "portainer" {
 
 # Watchtower
 resource "docker_container" "watchtower" {
-  name   = "watchtower"
-  image  = docker_image.watchtower
+  name    = "watchtower"
+  image   = docker_image.watchtower.latest
   restart = "unless-stopped"
 
-  volumes = [
-    "/var/run/docker.sock:/var/run/docker.sock"
-  ]
+  volumes {
+    host_path      = "/var/run/docker.sock"
+    container_path = "/var/run/docker.sock"
+  }
 
   networks_advanced {
     name = docker_network.proxy_net.name
