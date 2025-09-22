@@ -29,7 +29,5 @@ jobs:
           port: 5122
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Navega a la carpeta donde se copiaron los archivos
-            cd /home/deploy/proyecto-dokete
-            # Ejecuta docker-compose desde la ubicación correcta
-            docker-compose -f "docker-compose.yml" up -d --build
+            # Ejecuta docker-compose usando la ruta absoluta del archivo
+            docker-compose -f "/home/deploy/proyecto-dokete/docker-compose.yml" up -d --build
