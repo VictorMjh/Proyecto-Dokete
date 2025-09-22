@@ -15,4 +15,4 @@ jobs:
           
       - name: Connect to Ubuntu Server and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no vic@192.168.0.151 'bash -s' Script-DeployContainers.sh
+          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' Script-DeployContainers.sh
