@@ -1,6 +1,9 @@
-name: Deploy Docker
+name: Deploy Docker Containers
+
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main  # O la rama que prefieras para activar el workflow
 
 jobs:
   deploy:
@@ -16,4 +19,4 @@ jobs:
 
       - name: Connect with deply user to Ubuntu Server and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < Script-deployDocker
+          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < Script-DeployContainers.sh
