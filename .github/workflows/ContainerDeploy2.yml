@@ -1,0 +1,35 @@
+name: Deploy Container
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v2
+
+      - name: Copy files to Ubuntu Server
+        uses: appleboy/scp-action@v0.1.3
+        with:
+          host: sylvahabitat.duckdns.org
+          username: deploy
+          port: 5122
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./docker/docker-compose.yml,./docker/.env"
+          target: "/home/deploy/proyecto-dokete"
+
+      - name: Connect to Ubuntu Server and deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: sylvahabitat.duckdns.org
+          username: deploy
+          port: 5122
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Navega a la carpeta donde se copiaron los archivos
+            cd /home/deploy/proyecto-dokete
+            # Ejecuta docker compose desde la ubicación correcta
+            docker compose -f "docker-compose.yml" up -d --build
