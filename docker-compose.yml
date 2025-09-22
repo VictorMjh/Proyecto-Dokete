@@ -1,14 +1,19 @@
 version: '3.8'
 
 services:
+  
   nginx:
     image: nginx:latest
     ports:
       - "80:80"
-      - "443:443"
+      - "443:443" # Si usarás HTTPS más adelante
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - nextcloud
+      - homeassistant
+      - plex
+      - retroarch
     restart: always
 
   nextcloud:
