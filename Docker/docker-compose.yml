@@ -1,0 +1,104 @@
+version: '3.9'
+
+networks:
+  ${NETWORK_NAME}:
+    external: true
+
+services:
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+    networks:
+      - ${NETWORK_NAME}
+    restart: unless-stopped
+
+  nextcloud-db:
+    image: mariadb
+    container_name: nextcloud-db
+    volumes:
+      - ./nextcloud_db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - ${NETWORK_NAME}
+    restart: unless-stopped
+
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    depends_on:
+      - nextcloud-db
+    volumes:
+      - ./nextcloud_data:/var/www/html
+    environment:
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_HOST: nextcloud-db
+    networks:
+      - ${NETWORK_NAME}
+    restart: unless-stopped
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    volumes:
+      - ./homeassistant_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - ${NETWORK_NAME}
+    restart: unless-stopped
+    privileged: true
+
+  plex:
+    image: linuxserver/plex
+    container_name: plex
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - VERSION=docker
+    volumes:
+      - ./plex_config:/config
+      - ./plex_media:/media
+      - ./plex_transcode:/transcode
+    ports:
+      - "32400:32400"
+    networks:
+      - ${NETWORK_NAME}
+    restart: unless-stopped
+
+  retroarch:
+    image: es20490446e/retroarch-web
+    container_name: retroarch
+    networks:
+      - ${NETWORK_NAME}
+    restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer_data:/data
+    ports:
+      - "9000:9000"
+    networks:
+      - ${NETWORK_NAME}
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
