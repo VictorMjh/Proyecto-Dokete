@@ -15,7 +15,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      -- name: Create SSH Tunnel to Docker Daemon
+      - name: Create SSH Tunnel to Docker Daemon
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 -N -L 2375:/var/run/docker.sock deploy@sylvahabitat.duckdns.org &
           # Añade el esquema 'tcp://' para que Terraform lo reconozca
