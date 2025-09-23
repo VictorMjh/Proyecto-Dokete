@@ -17,9 +17,9 @@ jobs:
       - name: Generar archivo .env desde variables y secrets de git
         run: |
           echo "${{ vars.ENV_FILE }}" > deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
-          echo "DATA_PATH=${{ vars.DATA_PATH }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
+          echo "DATA_PATH=${{ vars.DATA_PATH }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
+          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.DATA_PATH }}.env" # Restringe los permisos del archivo .env en el servidor remoto
       # -----------------
     
