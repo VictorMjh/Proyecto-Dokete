@@ -1,10 +1,8 @@
 #!/bin/bash
-
-
 set -e  # Detener si hay errores
 
 # Navegar al directorio del script para encontrar el archivo .env
-cd "$(dirname "$0")"
+#cd "$(dirname "$0")"
 
 # Cargar variables desde el archivo .env
 set -o allexport
