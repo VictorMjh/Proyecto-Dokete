@@ -1,6 +1,6 @@
 terraform {
   cloud {
-    organization = "dokete-app"
+    organization = "VictorJH"
     workspaces {
       name = "dokete-docker-stack"
     }
