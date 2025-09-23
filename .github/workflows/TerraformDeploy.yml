@@ -34,14 +34,11 @@ jobs:
       # -----------------
       
       # --- Generar archivo .tfvars con los valores sensibles alojados en secrets de git ---
-      - name: Generate terraform.tfvars
+      - name: Generate Sensible.tfvars
         run: |
           echo "mysql_root_password = \"${{ secrets.MYSQL_ROOT_PASSWORD }}\"" >> ./terraform/github.tfvars
-          # echo "mysql_database = \"${{ secrets.MYSQL_DATABASE }}\"" >> ./terraform/github.tfvars
-          # echo "mysql_user = \"${{ secrets.MYSQL_USER }}\"" >> ./terraform/github.tfvars
           echo "mysql_password = \"${{ secrets.MYSQL_PASSWORD }}\"" >> ./terraform/github.tfvars
-          # echo "puid = ${{ secrets.PUID }}" >> ./terraform/github.tfvars
-          # echo "pgid = ${{ secrets.PGID }}" >> ./terraform/github.tfvars
+          
       # -----------------
       
       - name: Set up Terraform
