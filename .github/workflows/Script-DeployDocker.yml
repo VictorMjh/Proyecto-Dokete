@@ -1,4 +1,4 @@
-name: Script Deploy Docker
+name: Script Install Docker
 on:
   workflow_dispatch:
 
