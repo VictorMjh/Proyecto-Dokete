@@ -1,104 +1,146 @@
-version: '3.9'
+version: "3.9"
 
+# ==========================
+# Redes
+# ==========================
 networks:
-  ${NETWORK_NAME}:
-    external: true
+  default:
+    name: ${NETWORK_NAME}
+    driver: bridge
 
+# ==========================
+# Servicios
+# ==========================
 services:
+  # ==========================
+  # Nginx Proxy Manager
+  # ==========================
   nginx-proxy-manager:
     image: jc21/nginx-proxy-manager:latest
     container_name: nginx-proxy-manager
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
       - "81:81"
     volumes:
-      - ./npm/data:/data
-      - ./npm/letsencrypt:/etc/letsencrypt
+      - ${DATA_PATH}/npm/data:/data
+      - ${DATA_PATH}/npm/letsencrypt:/etc/letsencrypt
     networks:
-      - ${NETWORK_NAME}
-    restart: unless-stopped
+      - default
 
+  # ==========================
+  # MariaDB (Nextcloud DB)
+  # ==========================
   nextcloud-db:
-    image: mariadb
+    image: mariadb:latest
     container_name: nextcloud-db
-    volumes:
-      - ./nextcloud_db:/var/lib/mysql
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ${DATA_PATH}/nextcloud_db:/var/lib/mysql
     networks:
-      - ${NETWORK_NAME}
-    restart: unless-stopped
+      - default
 
+  # ==========================
+  # Nextcloud
+  # ==========================
   nextcloud:
-    image: nextcloud
+    image: nextcloud:latest
     container_name: nextcloud
+    restart: unless-stopped
     depends_on:
       - nextcloud-db
-    volumes:
-      - ./nextcloud_data:/var/www/html
     environment:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_HOST: nextcloud-db
+    volumes:
+      - ${DATA_PATH}/nextcloud_html:/var/www/html
+      - ${DATA_PATH}/nextcloud_config:/var/www/html/config
+      - ${DATA_PATH}/nextcloud_data:/var/www/html/data
     networks:
-      - ${NETWORK_NAME}
-    restart: unless-stopped
+      - default
 
+  # ==========================
+  # Home Assistant
+  # ==========================
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:stable
     container_name: homeassistant
+    restart: unless-stopped
+    privileged: true # ⚠️ Cámbialo por "devices" si solo usas USBs
     volumes:
-      - ./homeassistant_config:/config
+      - ${DATA_PATH}/homeassistant_config:/config
       - /etc/localtime:/etc/localtime:ro
     networks:
-      - ${NETWORK_NAME}
-    restart: unless-stopped
-    privileged: true
+      - default
 
+  # ==========================
+  # Plex Media Server
+  # ==========================
   plex:
     image: linuxserver/plex
     container_name: plex
+    restart: unless-stopped
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - VERSION=docker
-    volumes:
-      - ./plex_config:/config
-      - ./plex_media:/media
-      - ./plex_transcode:/transcode
+      - TZ=${TZ}
     ports:
       - "32400:32400"
+      - "32469:32469"
+      - "1900:1900/udp"
+      - "5353:5353/udp"
+      - "8324:8324"
+    volumes:
+      - ${DATA_PATH}/plex_config:/config
+      - ${DATA_PATH}/plex_media:/media
+      - ${DATA_PATH}/plex_transcode:/transcode
     networks:
-      - ${NETWORK_NAME}
-    restart: unless-stopped
+      - default
 
+  # ==========================
+  # Retroarch (⚠️ revisar imagen)
+  # ==========================
   retroarch:
     image: es20490446e/retroarch-web
     container_name: retroarch
-    networks:
-      - ${NETWORK_NAME}
     restart: unless-stopped
+    networks:
+      - default
 
+  # ==========================
+  # Portainer
+  # ==========================
   portainer:
     image: portainer/portainer-ce
     container_name: portainer
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./portainer_data:/data
+    restart: unless-stopped
     ports:
       - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DATA_PATH}/portainer_data:/data
     networks:
-      - ${NETWORK_NAME}
-    restart: unless-stopped
+      - default
 
+  # ==========================
+  # Watchtower (auto-updates)
+  # ==========================
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_LABEL_ENABLE=true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
+    networks:
+      - default
