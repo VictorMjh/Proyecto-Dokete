@@ -5,6 +5,7 @@ terraform {
       name = "dokete-docker-stack"
     }
   }
+
   required_providers {
     docker = {
       source  = "kreuzwerker/docker"
@@ -45,10 +46,6 @@ resource "docker_image" "plex" {
   name = "linuxserver/plex"
 }
 
-#resource "docker_image" "retroarch" {
-#  name = "es20490446e/retroarch-web"
-#}
-
 resource "docker_image" "portainer" {
   name = "portainer/portainer-ce"
 }
@@ -69,11 +66,11 @@ resource "docker_container" "nginx_proxy" {
 
   ports {
     internal = 80
-    external = 80
+    external = var.nginx_port
   }
 
   volumes {
-    host_path      = "/home/deploy/proyecto-dokete/docker/nginx/nginx.conf"
+    host_path      = "${var.data_path}/nginx/nginx.conf"
     container_path = "/etc/nginx/nginx.conf"
     read_only      = true
   }
@@ -86,7 +83,6 @@ resource "docker_container" "nginx_proxy" {
     docker_container.nextcloud,
     docker_container.homeassistant,
     docker_container.plex,
-    #docker_container.retroarch
   ]
 }
 
@@ -104,7 +100,7 @@ resource "docker_container" "nextcloud_db" {
   ]
 
   volumes {
-    host_path      = "${abspath(path.module)}/../docker/nextcloud_db"
+    host_path      = "${var.data_path}/nextcloud_db"
     container_path = "/var/lib/mysql"
   }
 
@@ -128,7 +124,7 @@ resource "docker_container" "nextcloud" {
   ]
 
   volumes {
-    host_path      = "${abspath(path.module)}/../docker/nextcloud_data"
+    host_path      = "${var.data_path}/nextcloud_data"
     container_path = "/var/www/html"
   }
 
@@ -145,7 +141,7 @@ resource "docker_container" "homeassistant" {
   privileged = true
 
   volumes {
-    host_path      = "${abspath(path.module)}/../docker/homeassistant_config"
+    host_path      = "${var.data_path}/homeassistant_config"
     container_path = "/config"
   }
 
@@ -174,21 +170,21 @@ resource "docker_container" "plex" {
 
   ports {
     internal = 32400
-    external = 32400
+    external = var.plex_port
   }
 
   volumes {
-    host_path      = "${abspath(path.module)}/../docker/plex_config"
+    host_path      = "${var.data_path}/plex_config"
     container_path = "/config"
   }
 
   volumes {
-    host_path      = "${abspath(path.module)}/../docker/plex_media"
+    host_path      = "${var.data_path}/plex_media"
     container_path = "/media"
   }
 
   volumes {
-    host_path      = "${abspath(path.module)}/../docker/plex_transcode"
+    host_path      = "${var.data_path}/plex_transcode"
     container_path = "/transcode"
   }
 
@@ -196,17 +192,6 @@ resource "docker_container" "plex" {
     name = docker_network.proxy_net.name
   }
 }
-
-# Retroarch
-#resource "docker_container" "retroarch" {
-#  name    = "retroarch"
-#  image   = docker_image.retroarch.image_id
-#  restart = "unless-stopped"
-#
-#  networks_advanced {
-#    name = docker_network.proxy_net.name
-#  }
-#}
 
 # Portainer
 resource "docker_container" "portainer" {
@@ -216,7 +201,7 @@ resource "docker_container" "portainer" {
 
   ports {
     internal = 9000
-    external = 9000
+    external = var.portainer_port
   }
 
   volumes {
@@ -225,7 +210,7 @@ resource "docker_container" "portainer" {
   }
 
   volumes {
-    host_path      = "${abspath(path.module)}/../docker/portainer_data"
+    host_path      = "${var.data_path}/portainer_data"
     container_path = "/data"
   }
 
@@ -249,4 +234,3 @@ resource "docker_container" "watchtower" {
     name = docker_network.proxy_net.name
   }
 }
-#
