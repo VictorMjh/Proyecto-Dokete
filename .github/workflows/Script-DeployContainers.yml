@@ -12,6 +12,10 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Usa el secreto SSH creado
+
+      - name: Crear carpeta remota del proyecto si no existe
+        run: |
+          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "mkdir -p ${{ vars.DATA_PATH }}"
       
       # --- Generar archivo .env desde variables y secrets de git ---
       - name: Generar archivo .env desde variables y secrets de git
