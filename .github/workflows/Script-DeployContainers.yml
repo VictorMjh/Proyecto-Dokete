@@ -29,17 +29,7 @@ jobs:
       #    source: "./docker/docker-compose.yml,./docker/.env"
       #    target: "/home/deploy/proyecto-dokete"    
 
-      # - name: Connect to Ubuntu Server and deploy
-      #  uses: appleboy/ssh-action@v0.1.10
-      #  with:
-      #    host: sylvahabitat.duckdns.org
-      #    username: deploy
-      #    port: 5122
-      #    key: ${{ secrets.SSH_PRIVATE_KEY }}
-      #    script: |
-      #      # Ejecuta docker-compose usando la ruta absoluta del archivo
-      #      docker-compose -f "/home/deploy/proyecto-dokete/docker-compose.yml" up -d --build
-      #
+
       
       - name: Generar archivo .env desde variables y secrets de git
         run: |
@@ -64,3 +54,15 @@ jobs:
       - name: Connect to Ubuntu Server and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < ./docker/Script-DeployContainers.sh
+
+      # - name: Connect to Ubuntu Server and deploy
+      #  uses: appleboy/ssh-action@v0.1.10
+      #  with:
+      #    host: sylvahabitat.duckdns.org
+      #    username: deploy
+      #    port: 5122
+      #    key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #    script: |
+      #      # Ejecuta docker-compose usando la ruta absoluta del archivo
+      #      docker-compose -f "/home/deploy/proyecto-dokete/docker-compose.yml" up -d --build
+      #
