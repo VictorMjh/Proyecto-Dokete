@@ -1,11 +1,11 @@
 # --- Netwok ---
-NETWORK_NAME="proxy_net"
+network_name = "proxy_net"
 
 # --- MSQL ---
 # mysql_root_password = "" # Alojado en GIT Secrets
 mysql_database      = "nextcloud"
 mysql_user          = "nextcloud"
-mysql_password      = "" # Alojado en GIT Secrets
+# mysql_password      = "" # Alojado en GIT Secrets
 puid                = 1000
 pgid                = 1000
 
