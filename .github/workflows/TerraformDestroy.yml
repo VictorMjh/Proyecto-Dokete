@@ -15,12 +15,6 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Create SSH Tunnel to Docker Daemon
-        run: |
-          ssh -o StrictHostKeyChecking=no -p 5122 -N -L 2375:/var/run/docker.sock deploy@sylvahabitat.duckdns.org &
-          echo "DOCKER_HOST=tcp://localhost:2375" >> $GITHUB_ENV
-          echo "DOCKER_TLS_VERIFY=0" >> $GITHUB_ENV
-      
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
