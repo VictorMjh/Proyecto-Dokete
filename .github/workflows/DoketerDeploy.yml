@@ -16,4 +16,4 @@ jobs:
 
       - name: Connect with deply user to Ubuntu Server and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < Script-DeployDocker.sh
+          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' <  ./docker/Script-DeployDocker.sh
