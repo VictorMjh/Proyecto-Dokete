@@ -12,7 +12,15 @@ jobs:
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Usa el secreto SSH creado
-          
+      
+      # --- Generar archivo .env desde variables y secrets de git ---
+      - name: Generar archivo .env desde variables y secrets de git
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
+          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+      # -----------------
+      
       - name: Connect to Ubuntu Server and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < ./docker/Script-DeployContainers.sh
