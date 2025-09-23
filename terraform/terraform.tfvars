@@ -1,7 +1,7 @@
-mysql_root_password = "example_root"
+# mysql_root_password = "" # Alojado en GIT Secrets
 mysql_database      = "nextcloud"
 mysql_user          = "nextcloud"
-mysql_password      = "example_pass"
+mysql_password      = "" # Alojado en GIT Secrets
 puid                = 1000
 pgid                = 1000
 
