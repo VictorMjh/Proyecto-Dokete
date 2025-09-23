@@ -19,36 +19,26 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "mkdir -p ${{ vars.DATA_PATH }}"
 
-      - name: Generar archivo .env desde variables y secrets
+      - name: Copiar docker-compose.yml al servidor
         run: |
-          echo "DATA_PATH=${{ vars.DATA_PATH }}" > .env
-          echo "NETWORK_NAME=${{ vars.NETWORK_NAME }}" >> .env
-          echo "MYSQL_DATABASE=${{ vars.MYSQL_DATABASE }}" >> .env
-          echo "MYSQL_USER=${{ vars.MYSQL_USER }}" >> .env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-          echo "PUID=${{ vars.PUID }}" >> .env
-          echo "PGID=${{ vars.PGID }}" >> .env
-          echo "TZ=${{ vars.TZ }}" >> .env
+          scp -P 5122 -o StrictHostKeyChecking=no ./docker/docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
 
-
-      - name: Verificar archivos generados
+      - name: Generar archivo .env directamente en el servidor
         run: |
-          ls -lh ./docker
-          echo "Contenido del .env:"
-          cat .env
+          ssh -p 5122 deploy@sylvahabitat.duckdns.org "cat > ${{ vars.DATA_PATH }}.env" << 'EOF'
+          DATA_PATH=${{ vars.DATA_PATH }}
+          NETWORK_NAME=${{ vars.NETWORK_NAME }}
+          MYSQL_DATABASE=${{ vars.MYSQL_DATABASE }}
+          MYSQL_USER=${{ vars.MYSQL_USER }}
+          MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+          PUID=${{ vars.PUID }}
+          PGID=${{ vars.PGID }}
+          TZ=${{ vars.TZ }}
+          EOF
+          ssh -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.DATA_PATH }}.env"
 
-      - name: Copiar archivos al servidor remoto
-        run: |
-          scp -P 5122 -o StrictHostKeyChecking=no docker/docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
-          scp -P 5122 -o StrictHostKeyChecking=no .env deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
-          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.DATA_PATH }}.env"
-
-      - name: Verificar archivos en servidor remoto
-        run: |
-          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "ls -lh ${{ vars.DATA_PATH }}"
-          
-      - name: Desplegar en servidor remoto
+      - name: Desplegar contenedores en remoto
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: sylvahabitat.duckdns.org
