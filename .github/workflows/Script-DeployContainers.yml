@@ -36,7 +36,7 @@ jobs:
         run: |
           ls -lh ./docker
           echo "Contenido del .env:"
-          cat ./docker/.env
+          cat .env
 
       - name: Copiar archivos al servidor remoto
         run: |
