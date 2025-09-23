@@ -32,7 +32,18 @@ jobs:
       #  run: |
       #    ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'mkdir -p /home/deploy/proyecto-dokete/docker/nginx /home/deploy/proyecto-dokete/docker/nextcloud_db /home/deploy/proyecto-dokete/docker/nextcloud_data /home/deploy/proyecto-dokete/docker/homeassistant_config /home/deploy/proyecto-dokete/docker/plex_config /home/deploy/proyecto-dokete/docker/plex_media /home/deploy/proyecto-dokete/docker/plex_transcode /home/deploy/proyecto-dokete/docker/portainer_data'
       # -----------------
-
+      
+      # --- Generar archivo .tfvars con los valores sensibles alojados en secrets de git ---
+      - name: Generate terraform.tfvars
+        run: |
+          echo "mysql_root_password = \"${{ secrets.MYSQL_ROOT_PASSWORD }}\"" >> ./terraform/github.tfvars
+          # echo "mysql_database = \"${{ secrets.MYSQL_DATABASE }}\"" >> ./terraform/github.tfvars
+          # echo "mysql_user = \"${{ secrets.MYSQL_USER }}\"" >> ./terraform/github.tfvars
+          echo "mysql_password = \"${{ secrets.MYSQL_PASSWORD }}\"" >> ./terraform/github.tfvars
+          # echo "puid = ${{ secrets.PUID }}" >> ./terraform/github.tfvars
+          # echo "pgid = ${{ secrets.PGID }}" >> ./terraform/github.tfvars
+      # -----------------
+      
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
