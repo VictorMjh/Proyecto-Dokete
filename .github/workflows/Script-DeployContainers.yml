@@ -16,7 +16,7 @@ jobs:
       # --- Generar archivo .env desde variables y secrets de git ---
       - name: Generar archivo .env desde variables y secrets de git
         run: |
-          echo "${{ vars.ENV_FILE }}" > deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
+          echo "${{ vars.ENV_FILE }}" > deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
           echo "DATA_PATH=${{ vars.DATA_PATH }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
