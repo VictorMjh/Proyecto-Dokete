@@ -15,9 +15,9 @@ provider "docker" {}
 # ========================
 # Red Docker
 # ========================
-#resource "docker_network" "proxy_net" { 
-#  name = var.network_name #se comenta para evitar el error de que ya existe
-#}
+resource "docker_network" "proxy_net" { 
+  name = var.network_name #se comenta para evitar el error de que ya existe
+}
 
 # ========================
 # Imágenes
