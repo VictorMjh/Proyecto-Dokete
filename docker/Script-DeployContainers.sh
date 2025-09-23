@@ -35,4 +35,6 @@ docker compose -f "$COMPOSE_FILE" up -d
 
 # Mostrar estado
 echo "🚀 Stack desplegado. Contenedores activos:"
+cd $DATA_PATH
+docker compose up -d
 docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
