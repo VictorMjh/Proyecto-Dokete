@@ -1,4 +1,4 @@
-name: Deploy Docker
+name: Script Deploy Docker
 on:
   workflow_dispatch:
 
@@ -16,4 +16,4 @@ jobs:
 
       - name: Connect with deply user to Ubuntu Server and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < Script-DeployDocker
+          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < Script-DeployDocker.sh
