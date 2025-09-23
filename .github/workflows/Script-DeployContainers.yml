@@ -1,4 +1,4 @@
-name: Deploy Container
+name: Script Deploy Container
 on:
   workflow_dispatch:
 
