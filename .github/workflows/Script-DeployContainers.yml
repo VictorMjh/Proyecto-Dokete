@@ -26,7 +26,8 @@ jobs:
       
       - name: Copiar archivos al servidor remoto usando variable de path
         run: |
-          scp -P 5122 -o StrictHostKeyChecking=no .env ./docker/docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
+          scp -P 5122 -o StrictHostKeyChecking=no ./docker/docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
+          scp -P 5122 -o StrictHostKeyChecking=no .env deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.DATA_PATH }}.env"
       
       - name: Connect to Ubuntu Server and deploy
