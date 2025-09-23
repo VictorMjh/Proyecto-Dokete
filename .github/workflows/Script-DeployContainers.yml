@@ -7,7 +7,8 @@ jobs:
     runs-on: ubuntu-latest  # Esta es la máquina donde se ejecuta el job
     steps:
       - name: Check out the code
-        uses: actions/checkout@v2  # Clona el código fuente del repositorio
+        uses: actions/checkout@v3  # Clona el código fuente del repositorio
+        
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -16,6 +17,29 @@ jobs:
       - name: Crear carpeta remota del proyecto si no existe
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "mkdir -p ${{ vars.DATA_PATH }}"
+
+      # comentado, de la otra version
+      #- name: Copy files to Ubuntu Server
+      #  uses: appleboy/scp-action@v0.1.3
+      #  with:
+      #    host: sylvahabitat.duckdns.org
+      #    username: deploy
+      #    port: 5122
+      #    key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #    source: "./docker/docker-compose.yml,./docker/.env"
+      #    target: "/home/deploy/proyecto-dokete"    
+
+      # - name: Connect to Ubuntu Server and deploy
+      #  uses: appleboy/ssh-action@v0.1.10
+      #  with:
+      #    host: sylvahabitat.duckdns.org
+      #    username: deploy
+      #    port: 5122
+      #    key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #    script: |
+      #      # Ejecuta docker-compose usando la ruta absoluta del archivo
+      #      docker-compose -f "/home/deploy/proyecto-dokete/docker-compose.yml" up -d --build
+      #
       
       - name: Generar archivo .env desde variables y secrets de git
         run: |
