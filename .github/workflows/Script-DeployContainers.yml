@@ -20,7 +20,13 @@ jobs:
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
       # -----------------
-      
+    
+      # Copia ambos archivos al home del usuario deploy
+      - name: Copiar archivos al servidor remoto usando variable de path
+        run: |
+          scp -P 5122 -o StrictHostKeyChecking=no .env docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.REMOTE_DEPLOY_PATH }}
+          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.REMOTE_DEPLOY_PATH }}.env" # Restringe los permisos del archivo .env en el servidor remoto
+
       - name: Connect to Ubuntu Server and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < ./docker/Script-DeployContainers.sh
