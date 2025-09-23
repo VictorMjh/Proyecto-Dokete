@@ -15,9 +15,9 @@ provider "docker" {}
 # ========================
 # Red Docker
 # ========================
-resource "docker_network" "proxy_net" { 
-  name = var.network_name #se comenta para evitar el error de que ya existe
-}
+#resource "docker_network" "proxy_net" { 
+#  name = var.network_name #se comenta para evitar el error de que ya existe
+#}
 
 # ========================
 # Imágenes
@@ -76,7 +76,7 @@ resource "docker_container" "nginx_proxy" {
   }
 
   networks_advanced {
-    name = docker_network.proxy_net.name
+    name = "proxy_net" #name = docker_network.proxy_net.name
   }
 
   depends_on = [
@@ -106,7 +106,7 @@ resource "docker_container" "nextcloud_db" {
   }
 
   networks_advanced {
-    name = docker_network.proxy_net.name
+    name = "proxy_net" #name = docker_network.proxy_net.name
   }
 }
 
@@ -130,7 +130,7 @@ resource "docker_container" "nextcloud" {
   }
 
   networks_advanced {
-    name = docker_network.proxy_net.name
+    name = "proxy_net" #name = docker_network.proxy_net.name
   }
 }
 
@@ -153,7 +153,7 @@ resource "docker_container" "homeassistant" {
   }
 
   networks_advanced {
-    name = docker_network.proxy_net.name
+    name = "proxy_net" #name = docker_network.proxy_net.name
   }
 }
 
@@ -190,7 +190,7 @@ resource "docker_container" "plex" {
   }
 
   networks_advanced {
-    name = docker_network.proxy_net.name
+    name = "proxy_net" #name = docker_network.proxy_net.name
   }
 }
 
@@ -201,7 +201,7 @@ resource "docker_container" "plex" {
 #  restart = "unless-stopped"
 #
 #  networks_advanced {
-#    name = docker_network.proxy_net.name
+#    name = "proxy_net" #name = docker_network.proxy_net.name
 #  }
 #}
 
@@ -227,7 +227,7 @@ resource "docker_container" "portainer" {
   }
 
   networks_advanced {
-    name = docker_network.proxy_net.name
+    name = "proxy_net" #name = docker_network.proxy_net.name
   }
 }
 
@@ -243,7 +243,7 @@ resource "docker_container" "watchtower" {
   }
 
   networks_advanced {
-    name = docker_network.proxy_net.name
+    name = "proxy_net" #name = docker_network.proxy_net.name
   }
 }
 #
