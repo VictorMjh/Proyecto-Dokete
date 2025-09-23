@@ -24,7 +24,7 @@ jobs:
       # Copia ambos archivos al home del usuario deploy
       - name: Copiar archivos al servidor remoto usando variable de path
         run: |
-          scp -P 5122 -o StrictHostKeyChecking=no .env docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
+          scp -P 5122 -o StrictHostKeyChecking=no .env ./docker/docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.DATA_PATH }}.env" # Restringe los permisos del archivo .env en el servidor remoto
 
       - name: Connect to Ubuntu Server and deploy
