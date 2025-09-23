@@ -17,22 +17,18 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "mkdir -p ${{ vars.DATA_PATH }}"
       
-      # --- Generar archivo .env desde variables y secrets de git ---
       - name: Generar archivo .env desde variables y secrets de git
         run: |
-          echo "${{ vars.ENV_FILE }}" > deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
-          echo "DATA_PATH=${{ vars.DATA_PATH }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}.env
-          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.DATA_PATH }}.env" # Restringe los permisos del archivo .env en el servidor remoto
-      # -----------------
-    
-      # --- Copia el archivo docker-compose.yml al host ----
+          echo "${{ vars.ENV_FILE }}" > .env
+          echo "DATA_PATH=${{ vars.DATA_PATH }}" >> .env
+          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+      
       - name: Copiar archivos al servidor remoto usando variable de path
         run: |
-          scp -P 5122 -o StrictHostKeyChecking=no ./docker/docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
-      # -----------------
-
+          scp -P 5122 -o StrictHostKeyChecking=no .env ./docker/docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
+          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.DATA_PATH }}.env"
+      
       - name: Connect to Ubuntu Server and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < ./docker/Script-DeployContainers.sh
