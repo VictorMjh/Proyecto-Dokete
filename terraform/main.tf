@@ -70,7 +70,7 @@ resource "docker_container" "nginx_proxy" {
   }
 
   volumes {
-    host_path      = "${abspath(path.module)}/../docker/nginx/nginx.conf"
+    host_path      = "/home/deploy/proyecto-dokete/docker/nginx/nginx.conf"
     container_path = "/etc/nginx/nginx.conf"
     read_only      = true
   }
