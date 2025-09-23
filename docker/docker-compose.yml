@@ -12,6 +12,7 @@ networks:
 # Servicios
 # ==========================
 services:
+
   # ==========================
   # Nginx Proxy Manager
   # ==========================
@@ -107,14 +108,14 @@ services:
       - default
 
   # ==========================
-  # Retroarch (⚠️ revisar imagen)
+  # Retroarch (⚠️ comentado, revisar imagen)
   # ==========================
-  retroarch:
-    image: es20490446e/retroarch-web
-    container_name: retroarch
-    restart: unless-stopped
-    networks:
-      - default
+  #retroarch:
+  #  image: es20490446e/retroarch-web
+  #  container_name: retroarch
+  #  restart: unless-stopped
+  #  networks:
+  #    - default
 
   # ==========================
   # Portainer
