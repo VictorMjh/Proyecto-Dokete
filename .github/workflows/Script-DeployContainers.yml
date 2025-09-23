@@ -23,13 +23,20 @@ jobs:
           echo "DATA_PATH=${{ vars.DATA_PATH }}" >> ./docker/.env
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> ./docker/.env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> ./docker/.env
+
+      - name: Verifica archivos generados
+        run: |
+          ls -lh ./docker
+          cat ./docker/.env || echo "NO EXISTE .env"
       
       - name: Copiar archivos al servidor remoto usando variable de path
         run: |
           scp -P 5122 -o StrictHostKeyChecking=no ./docker/docker-compose.yml deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
           scp -P 5122 -o StrictHostKeyChecking=no ./docker/.env deploy@sylvahabitat.duckdns.org:${{ vars.DATA_PATH }}
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org "chmod 600 ${{ vars.DATA_PATH }}.env"
-      
+          
+
+          
       - name: Connect to Ubuntu Server and deploy
         run: |
           ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' < ./docker/Script-DeployContainers.sh
