@@ -17,7 +17,7 @@ jobs:
       - name: Generar archivo .env desde variables y secrets de git
         run: |
           echo "${{ vars.ENV_FILE }}" > .env
-          echo "${{ vars.DATA_PATH }}" >> .env
+          echo "DATA_PATH=${{ vars.DATA_PATH }}" >> .env
           echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> .env
           echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
       # -----------------
