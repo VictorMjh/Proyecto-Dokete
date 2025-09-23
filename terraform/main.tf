@@ -1,6 +1,9 @@
 terraform {
-  backend "local" {
-    path = "terraform.tfstate"
+  cloud {
+    organization = "dokete-app"
+    workspaces {
+      name = "dokete-docker-stack"
+    }
   }
   required_providers {
     docker = {
