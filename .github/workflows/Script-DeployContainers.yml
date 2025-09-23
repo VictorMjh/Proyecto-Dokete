@@ -33,10 +33,10 @@ jobs:
       
       - name: Generar archivo .env desde variables y secrets de git
         run: |
-          echo "${{ vars.ENV_FILE }}" > ./docker/.env
-          echo "DATA_PATH=${{ vars.DATA_PATH }}" >> ./docker/.env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> ./docker/.env
-          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> ./docker/.env
+          echo "${{ vars.ENV_FILE }}" > /docker/.env
+          echo "DATA_PATH=${{ vars.DATA_PATH }}" >> /docker/.env
+          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}" >> /docker/.env
+          echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> /docker/.env
 
       - name: Verifica archivos generados
         run: |
