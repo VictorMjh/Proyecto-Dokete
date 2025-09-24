@@ -1,4 +1,3 @@
-
 # ==========================
 # Redes
 # ==========================
@@ -26,6 +25,35 @@ services:
     volumes:
       - ${DATA_PATH}/npm/data:/data
       - ${DATA_PATH}/npm/letsencrypt:/etc/letsencrypt
+    networks:
+      - default
+
+  # ==========================
+  # Portainer
+  # ==========================
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DATA_PATH}/portainer_data:/data
+    networks:
+      - default
+
+  # ==========================
+  # Watchtower (auto-updates)
+  # ==========================
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_LABEL_ENABLE=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - default
 
@@ -66,45 +94,8 @@ services:
       - ${DATA_PATH}/nextcloud_data:/var/www/html/data
     networks:
       - default
-
-  # ==========================
-  # Home Assistant
-  # ==========================
-  homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:stable
-    container_name: homeassistant
-    restart: unless-stopped
-    privileged: true # ⚠️ Cámbialo por "devices" si solo usas USBs
-    volumes:
-      - ${DATA_PATH}/homeassistant_config:/config
-      - /etc/localtime:/etc/localtime:ro
-    networks:
-      - default
-
-  # ==========================
-  # Plex Media Server
-  # ==========================
-  plex:
-    image: linuxserver/plex
-    container_name: plex
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - VERSION=docker
-      - TZ=${TZ}
     ports:
-      - "32400:32400"
-      - "32469:32469"
-      - "1900:1900/udp"
-      - "5353:5353/udp"
-      - "8324:8324"
-    volumes:
-      - ${DATA_PATH}/plex_config:/config
-      - ${DATA_PATH}/plex_media:/media
-      - ${DATA_PATH}/plex_transcode:/transcode
-    networks:
-      - default
+      - "8180:80"
 
   # ==========================
   # Retroarch (⚠️ comentado, revisar imagen)
@@ -115,32 +106,3 @@ services:
   #  restart: unless-stopped
   #  networks:
   #    - default
-
-  # ==========================
-  # Portainer
-  # ==========================
-  portainer:
-    image: portainer/portainer-ce
-    container_name: portainer
-    restart: unless-stopped
-    ports:
-      - "9000:9000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${DATA_PATH}/portainer_data:/data
-    networks:
-      - default
-
-  # ==========================
-  # Watchtower (auto-updates)
-  # ==========================
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    restart: unless-stopped
-    environment:
-      - WATCHTOWER_LABEL_ENABLE=true
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - default
