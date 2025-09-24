@@ -28,6 +28,7 @@ services:
     networks:
       - default
 
+
   # ==========================
   # Portainer
   # ==========================
@@ -96,6 +97,48 @@ services:
       - default
     ports:
       - "8180:80"
+
+  # ==========================
+  # Home Assistant
+  # ==========================
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    privileged: true # ⚠️ Cámbialo por "devices" si solo usas USBs
+    volumes:
+      - ${DATA_PATH}/homeassistant_config:/config
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - default
+    ports:
+      - "8123:8123"
+
+  # ==========================
+  # Plex Media Server
+  # ==========================
+  plex:
+    image: linuxserver/plex
+    container_name: plex
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - VERSION=docker
+      - TZ=${TZ}
+    ports:
+      - "32400:32400"
+      - "32469:32469"
+      - "1900:1900/udp"
+      - "5353:5353/udp"
+      - "8324:8324"
+    volumes:
+      - ${DATA_PATH}/plex_config:/config
+      - ${DATA_PATH}/plex_media:/media
+      - ${DATA_PATH}/plex_transcode:/transcode
+    networks:
+      - default
+
 
   # ==========================
   # Retroarch (⚠️ comentado, revisar imagen)
