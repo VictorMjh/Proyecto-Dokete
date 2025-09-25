@@ -1,0 +1,55 @@
+
+# === Redes ===
+networks:
+  default:
+    name: ${NETWORK_NAME}
+    driver: bridge
+
+#  === Services ===
+services:
+
+  # Nginx Proxy Manager
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "81:81"
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - default
+
+  # Portainer
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - default
+
+  # Watchtower (auto-updates)
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    environment:
+      - WATCHTOWER_LABEL_ENABLE=true
+    volumes:
+      - /var
+    networks:
+      - default
+
+#  === Volumes ===
+volumes:
+  portainer_data:
+  npm_data:
+  npm_letsencrypt:
