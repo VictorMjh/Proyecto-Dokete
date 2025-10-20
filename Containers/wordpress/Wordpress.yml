@@ -8,19 +8,19 @@ services:
      restart: always
      environment:
        MYSQL_ROOT_PASSWORD: ${MYSQL_DATABASE_PASSWORD}
-       MYSQL_DATABASE: wordpress
-       MYSQL_USER: wordpress
-       MYSQL_PASSWORD: wordpress
+       MYSQL_DATABASE: $MYSQL_DATABASE
+       MYSQL_USER: $MYSQL_USER
+       MYSQL_PASSWORD: $MYSQL_PASSWORD
 
    wordpress:
      image: wordpress:latest
      ports:
-       - 80
+       - $WORDPRESS_HOST_PORT
      restart: always
      environment:
        WORDPRESS_DB_HOST: db:3306
-       WORDPRESS_DB_USER: wordpress
-       WORDPRESS_DB_PASSWORD: wordpress
+       WORDPRESS_DB_USER: $WORDPRESS_DB_USER
+       WORDPRESS_DB_PASSWORD: $WORDPRESS_DB_PASSWORD
 
 volumes:
     db_data:
