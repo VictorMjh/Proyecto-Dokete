@@ -17,7 +17,7 @@ jobs:
 
       - name: Crear carpeta remota del proyecto si no existe
         run: |
-          ssh -o StrictHostKeyChecking=no -p 5122 deploy@${{ vars.DOKETER_HOST }} "mkdir -p ${{ vars.DATA_PATH }}"
+          ssh -o StrictHostKeyChecking=no -p 22 deploy@${{ vars.DOKETER_HOST }} "mkdir -p ${{ vars.DATA_PATH }}"
 
       - name: Copiar docker-compose.yml al servidor
         run: |
