@@ -11,7 +11,7 @@ jobs:
 
       #- name: Copy deployment files
       #  run: |
-      #    scp -P 5122 -o StrictHostKeyChecking=no -r ./docker/* deploy@sylvahabitat.duckdns.org:/home/deploy/proyecto-dokete
+      #    scp -P 5122 -o StrictHostKeyChecking=no -r ./docker/* deploy@${{ vars.DOKETER_HOST }}:/home/deploy/proyecto-dokete
 
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
@@ -20,5 +20,5 @@ jobs:
 
       - name: Connect with deply user to Ubuntu Server and deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -p 5122 deploy@sylvahabitat.duckdns.org 'bash -s' <  ./docker/Script-DeployDocker.sh
+          ssh -o StrictHostKeyChecking=no -p 5122 deploy@${{ vars.DOKETER_HOST }} 'bash -s' <  ./docker/Script-DeployDocker.sh
           
