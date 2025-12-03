@@ -21,11 +21,11 @@ jobs:
 
       - name: Copiar docker-compose.yml al servidor
         run: |
-          scp -P 5122 -o StrictHostKeyChecking=no ./docker/docker-compose.yml deploy@${{ vars.DOKETER_HOST }}:${{ vars.DATA_PATH }}
+          scp -P 22 -o StrictHostKeyChecking=no ./docker/docker-compose.yml deploy@${{ vars.DOKETER_HOST }}:${{ vars.DATA_PATH }}
 
       - name: Generar archivo .env directamente en el servidor
         run: |
-          ssh -p 5122 deploy@${{ vars.DOKETER_HOST }} "cat > ${{ vars.DATA_PATH }}.env" << 'EOF'
+          ssh -p 22 deploy@${{ vars.DOKETER_HOST }} "cat > ${{ vars.DATA_PATH }}.env" << 'EOF'
           DATA_PATH=${{ vars.DATA_PATH }}
           NETWORK_NAME=${{ vars.NETWORK_NAME }}
           MYSQL_DATABASE=${{ vars.MYSQL_DATABASE }}
@@ -36,14 +36,14 @@ jobs:
           PGID=${{ vars.PGID }}
           TZ=${{ vars.TZ }}
           EOF
-          ssh -p 5122 deploy@${{ vars.DOKETER_HOST }} "chmod 600 ${{ vars.DATA_PATH }}.env"
+          ssh -p 22 deploy@${{ vars.DOKETER_HOST }} "chmod 600 ${{ vars.DATA_PATH }}.env"
 
       - name: Desplegar contenedores en remoto
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ vars.DOKETER_HOST }}
           username: deploy
-          port: 5122
+          port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ vars.DATA_PATH }}
