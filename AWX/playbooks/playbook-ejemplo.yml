@@ -1,7 +1,0 @@
-- name: Test AWX project
-  hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: Mostrar mensaje
-      debug:
-        msg: "AWX funciona correctamente"
