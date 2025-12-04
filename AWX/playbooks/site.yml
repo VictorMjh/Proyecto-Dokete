@@ -1,0 +1,13 @@
+---
+- name: Despliegue completo del stack Doketer
+  hosts: doketer
+  become: yes
+
+  roles:
+    - docker
+    - duckdns
+    - watchtower
+    - portainer
+    - portainer_git
+    - ufw
+    - npm

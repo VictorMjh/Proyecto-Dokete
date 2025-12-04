@@ -1,0 +1,130 @@
+---
+###########################################################
+# AUTENTICACIÓN
+###########################################################
+- name: Autenticar en NPM
+  uri:
+    url: "{{ npm_url }}/api/tokens"
+    method: POST
+    body_format: json
+    body:
+      identity: "{{ npm_username }}"
+      secret: "{{ npm_password }}"
+  register: npm_token
+
+- set_fact:
+    npm_jwt: "{{ npm_token.json.token }}"
+
+###########################################################
+# PROXY HOST PORTAINER
+###########################################################
+- name: Crear proxy host Portainer
+  uri:
+    url: "{{ npm_url }}/api/nginx/proxy-hosts"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ npm_jwt }}"
+    body_format: json
+    body:
+      domain_names:
+        - "{{ portainer_domain }}"
+      forward_scheme: "https"
+      forward_host: "localhost"
+      forward_port: 9443
+      certificate_id: 0
+      ssl_forced: true
+    validate_certs: false
+  register: proxy_portainer
+
+###########################################################
+# CERTIFICADO LET'S ENCRYPT PARA PORTAINER
+###########################################################
+- name: Emitir certificado LE para Portainer
+  uri:
+    url: "{{ npm_url }}/api/nginx/certificates"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ npm_jwt }}"
+    body_format: json
+    body:
+      provider: "letsencrypt"
+      domain_names:
+        - "{{ portainer_domain }}"
+      email: "{{ cert_email }}"
+      agree_tos: true
+    validate_certs: false
+  register: cert_portainer
+
+- name: Asociar certificado a Portainer
+  uri:
+    url: "{{ npm_url }}/api/nginx/proxy-hosts/{{ proxy_portainer.json.id }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ npm_jwt }}"
+    body_format: json
+    body:
+      domain_names:
+        - "{{ portainer_domain }}"
+      forward_scheme: "https"
+      forward_host: "localhost"
+      forward_port: 9443
+      certificate_id: "{{ cert_portainer.json.id }}"
+      ssl_forced: true
+    validate_certs: false
+
+###########################################################
+# PROXY HOST NPM
+###########################################################
+- name: Crear proxy host NPM
+  uri:
+    url: "{{ npm_url }}/api/nginx/proxy-hosts"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ npm_jwt }}"
+    body_format: json
+    body:
+      domain_names:
+        - "{{ npm_domain }}"
+      forward_scheme: "http"
+      forward_host: "localhost"
+      forward_port: 81
+      certificate_id: 0
+      ssl_forced: true
+    validate_certs: false
+  register: proxy_npm
+
+###########################################################
+# CERTIFICADO LET'S ENCRYPT PARA NPM
+###########################################################
+- name: Emitir certificado LE para NPM
+  uri:
+    url: "{{ npm_url }}/api/nginx/certificates"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ npm_jwt }}"
+    body_format: json
+    body:
+      provider: "letsencrypt"
+      domain_names:
+        - "{{ npm_domain }}"
+      email: "{{ cert_email }}"
+      agree_tos: true
+    validate_certs: false
+  register: cert_npm
+
+- name: Asociar certificado a NPM
+  uri:
+    url: "{{ npm_url }}/api/nginx/proxy-hosts/{{ proxy_npm.json.id }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ npm_jwt }}"
+    body_format: json
+    body:
+      domain_names:
+        - "{{ npm_domain }}"
+      forward_scheme: "http"
+      forward_host: "localhost"
+      forward_port: 81
+      certificate_id: "{{ cert_npm.json.id }}"
+      ssl_forced: true
+    validate_certs: false

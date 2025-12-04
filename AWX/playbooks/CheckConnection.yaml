@@ -1,0 +1,5 @@
+- hosts: doketer-vic-01
+  become: yes
+  tasks:
+    - name: Check connection
+      ping:
