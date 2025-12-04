@@ -6,8 +6,8 @@
 
   roles:
     - docker
-    #- duckdns
-    #- watchtower
+    - duckdns
+    - watchtower
     - portainer
     - portainer_git
     - ufw
