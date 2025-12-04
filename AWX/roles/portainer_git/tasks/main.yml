@@ -1,5 +1,5 @@
 ---
-- name: Autenticar en Portainer
+- name: Obtener token JWT de Portainer
   uri:
     url: "{{ portainer_url }}/api/auth"
     method: POST
@@ -7,13 +7,16 @@
     body:
       username: "{{ portainer_username }}"
       password: "{{ portainer_password }}"
-    validate_certs: false
+    validate_certs: no
   register: portainer_auth
 
-- set_fact:
+
+- name: Guardar token
+  set_fact:
     portainer_token: "{{ portainer_auth.json.jwt }}"
 
-- name: Crear credencial Git en Portainer
+
+- name: Crear credencial Git en Portainer (HTTPS vacío - público)
   uri:
     url: "{{ portainer_url }}/api/gitcredentials"
     method: POST
@@ -21,13 +24,14 @@
       Authorization: "Bearer {{ portainer_token }}"
     body_format: json
     body:
-      name: "Git-Credentials"
+      name: "Git-Credentials-AWX"
       username: ""
       password: ""
-    validate_certs: false
+    validate_certs: no
   register: git_cred
 
-- name: Crear Stack Portainer desde Git (autodeploy)
+
+- name: Crear Stack en Portainer desde Git (auto-deploy)
   uri:
     url: "{{ portainer_url }}/api/stacks"
     method: POST
@@ -37,12 +41,13 @@
     body:
       name: "Portainer-Git-Stack"
       type: 1
-      endpointId: 1
+      endpointId: "{{ portainer_endpoint_id }}"
       repositoryURL: "{{ git_repo_url }}"
       repositoryReferenceName: "{{ git_branch }}"
       repositoryCredentialId: "{{ git_cred.json.id }}"
       composeFilePathInRepository: "{{ git_compose_path }}"
       gitConfig:
         autoUpdate:
-          interval: "5m"
-    validate_certs: false
+        interval: "5m"
+    validate_certs: no
+  register: portainer_stack

@@ -1,9 +1,10 @@
 ---
-- name: Desplegar Watchtower
+- name: Desplegar contenedor Watchtower
   community.docker.docker_container:
     name: watchtower
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
+    state: started
     restart_policy: unless-stopped
-    command: "--cleanup --schedule '0 */6 * * *'"
+    command: "--cleanup --schedule '{{ watchtower_schedule }}'"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

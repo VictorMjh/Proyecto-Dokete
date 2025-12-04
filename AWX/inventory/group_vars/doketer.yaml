@@ -1,16 +1,12 @@
-###############################################
-# DOMINIOS Y CERTIFICADOS
-###############################################
-portainer_domain: "portainer.victor-m.duckdns.org"
-npm_domain: "npm.victor-m.duckdns.org"
+# Variables globales de grupo - doketer
 
-cert_email: "Victor-jh@outlook.es"
 
 ###############################################
 # DUCKDNS
 ###############################################
 duckdns_token: "c45cd649-e3ee-4f55-8cc9-af9a5d463a96"
 duckdns_subdomain: "victor-m"
+
 
 ###############################################
 # PORTAINER
@@ -19,6 +15,7 @@ portainer_url: "https://portainer.victor-m.duckdns.org"
 portainer_username: "Deploy"
 portainer_password: "DokttrDpl&dkik51"
 
+
 ###############################################
 # PORTAINER - GIT AUTO DEPLOY
 ###############################################
@@ -26,9 +23,31 @@ git_repo_url: "https://github.com/VictorMjh/Proyecto-Dokete.git"
 git_branch: "main"
 git_compose_path: "docker/portainer"
 
+
 ###############################################
 # NGINX PROXY MANAGER
 ###############################################
-npm_url: "http://localhost:81"   # Acceso interno desde el host
+npm_url: "http://localhost:81"
 npm_username: "Victor-jh@outlook.es"
 npm_password: "NPM&dktp5125"
+
+###############################################
+# Dominios y certificados
+###############################################
+portainer_domain: "portainer.victor-m.duckdns.org"
+npm_domain: "npm.victor-m.duckdns.org"
+cert_email: "Victor-jh@outlook.es"
+
+
+# Watchtower schedule
+watchtower_schedule: "0 */6 * * *"
+
+
+# Docker packages (fallback)
+docker_packages:
+  - docker.io
+  - docker-compose-plugin
+
+
+# Endpoint id por defecto para Portainer (ajusta si tienes más endpoints)
+portainer_endpoint_id: 1

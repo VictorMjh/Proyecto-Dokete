@@ -1,0 +1,9 @@
+# Variables específicas del host Doketer-Vic-01
+
+
+ansible_user: ubuntu
+ansible_python_interpreter: /usr/bin/python3
+
+
+# Opcional: claves ssh o rutas a ssh key en AWX si lo necesitas
+# awx_ssh_key: "{{ lookup('file', '~/.ssh/ansible_awx') }}"

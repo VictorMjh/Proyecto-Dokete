@@ -1,7 +1,8 @@
 ---
-- name: Despliegue completo del stack Doketer
+- name: Despliegue completo Doketer
   hosts: doketer
   become: yes
+  gather_facts: yes
 
   roles:
     - docker

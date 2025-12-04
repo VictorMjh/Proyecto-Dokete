@@ -1,11 +1,22 @@
 ---
-- name: Crear contenedor DuckDNS
+- name: Crear directorio de configuración DuckDNS
+  file:
+    path: /docker/duckdns
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+
+- name: Desplegar contenedor DuckDNS (linuxserver/duckdns)
   community.docker.docker_container:
     name: duckdns
-    image: lscr.io/linuxserver/duckdns
+    image: lscr.io/linuxserver/duckdns:latest
+    state: started
     restart_policy: unless-stopped
     env:
       SUBDOMAINS: "{{ duckdns_subdomain }}"
       TOKEN: "{{ duckdns_token }}"
     volumes:
       - /docker/duckdns:/config
+  register: duckdns_res

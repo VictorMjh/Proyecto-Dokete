@@ -12,13 +12,14 @@
       secret: "{{ npm_password }}"
   register: npm_token
 
-- set_fact:
+- name: Guardar JWT de NPM
+  set_fact:
     npm_jwt: "{{ npm_token.json.token }}"
 
 ###########################################################
 # PROXY HOST PORTAINER
 ###########################################################
-- name: Crear proxy host Portainer
+- name: Crear proxy host - Portainer
   uri:
     url: "{{ npm_url }}/api/nginx/proxy-hosts"
     method: POST
@@ -36,10 +37,8 @@
     validate_certs: false
   register: proxy_portainer
 
-###########################################################
 # CERTIFICADO LET'S ENCRYPT PARA PORTAINER
-###########################################################
-- name: Emitir certificado LE para Portainer
+- name: Emitir certificado Let's Encrypt - Portainer
   uri:
     url: "{{ npm_url }}/api/nginx/certificates"
     method: POST
@@ -55,7 +54,8 @@
     validate_certs: false
   register: cert_portainer
 
-- name: Asociar certificado a Portainer
+
+- name: Asociar certificado a host - Portainer
   uri:
     url: "{{ npm_url }}/api/nginx/proxy-hosts/{{ proxy_portainer.json.id }}"
     method: PUT
@@ -75,7 +75,7 @@
 ###########################################################
 # PROXY HOST NPM
 ###########################################################
-- name: Crear proxy host NPM
+- name: Crear proxy host - NPM (panel)
   uri:
     url: "{{ npm_url }}/api/nginx/proxy-hosts"
     method: POST
@@ -96,7 +96,7 @@
 ###########################################################
 # CERTIFICADO LET'S ENCRYPT PARA NPM
 ###########################################################
-- name: Emitir certificado LE para NPM
+- name: Emitir certificado Let's Encrypt - NPM
   uri:
     url: "{{ npm_url }}/api/nginx/certificates"
     method: POST
@@ -112,7 +112,8 @@
     validate_certs: false
   register: cert_npm
 
-- name: Asociar certificado a NPM
+
+- name: Asociar certificado a host - NPM
   uri:
     url: "{{ npm_url }}/api/nginx/proxy-hosts/{{ proxy_npm.json.id }}"
     method: PUT
