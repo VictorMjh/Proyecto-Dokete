@@ -3,6 +3,6 @@ all:
     doketer:
       hosts:
         doketer-vic-01:
-          ansible_host: 192.168.1.100 # <- CAMBIA por la IP pública/privada real
+          ansible_host: 192.168.0.151 # <- CAMBIA por la IP pública/privada real
           ansible_user: ubuntu
           ansible_python_interpreter: /usr/bin/python3
