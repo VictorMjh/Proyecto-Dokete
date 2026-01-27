@@ -6,12 +6,12 @@
 
 - name: Desplegar Portainer CE
   community.docker.docker_container:
-  name: portainer
-  image: portainer/portainer-ce:latest
-  state: started
-  restart_policy: unless-stopped
-  ports:
-    - "9443:9443"
+    name: portainer
+    image: portainer/portainer-ce:latest
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "9443:9443"
   volumes:
     - portainer_data:/data
     - /var/run/docker.sock:/var/run/docker.sock
