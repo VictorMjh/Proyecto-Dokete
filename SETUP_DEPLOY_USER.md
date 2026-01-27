@@ -39,6 +39,9 @@ O ejecuta los comandos manualmente:
 # Crear usuario
 sudo useradd -m -s /bin/bash -d /home/deploy deploy
 
+# Crear grupo docker (si no existe - aún no está instalado Docker)
+sudo groupadd docker 2>/dev/null || true
+
 # Agregar a docker
 sudo usermod -aG docker deploy
 

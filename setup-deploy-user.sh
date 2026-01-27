@@ -14,8 +14,12 @@ else
     echo "✓ Usuario deploy creado"
 fi
 
-# 2. Agregar a grupo docker (para evitar usar sudo con docker)
-echo "→ Agregando deploy al grupo docker..."
+# 2. Crear grupo docker si no existe, luego agregar usuario
+echo "→ Preparando grupo docker..."
+if ! getent group docker &>/dev/null; then
+    echo "  → Grupo docker no existe, creándolo..."
+    sudo groupadd docker
+fi
 sudo usermod -aG docker deploy
 echo "✓ Usuario agregado a grupo docker"
 
