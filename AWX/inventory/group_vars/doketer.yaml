@@ -51,3 +51,13 @@ docker_packages:
 
 # Endpoint id por defecto para Portainer (ajusta si tienes más endpoints)
 portainer_endpoint_id: 1
+
+###############################################
+# NEXTCLOUD
+###############################################
+nextcloud_domain: "nextcloud.victor-m.duckdns.org"
+nextcloud_db_password: "NextcloudDB&secure123"
+nextcloud_admin_user: "admin"
+nextcloud_admin_password: "Nextcloud&Admin456"
+nextcloud_db_name: "nextcloud"
+nextcloud_db_user: "nextcloud"

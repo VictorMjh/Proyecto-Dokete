@@ -1,0 +1,146 @@
+---
+- name: Crear volúmenes para Nextcloud
+  community.docker.docker_volume:
+    name: "{{ item }}"
+  loop:
+    - nextcloud_data
+    - nextcloud_db_data
+
+
+- name: Crear directorio de configuración Nextcloud
+  file:
+    path: /docker/nextcloud
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+
+- name: Desplegar PostgreSQL para Nextcloud
+  community.docker.docker_container:
+    name: nextcloud-db
+    image: postgres:15-alpine
+    state: started
+    restart_policy: unless-stopped
+    env:
+      POSTGRES_DB: "{{ nextcloud_db_name }}"
+      POSTGRES_USER: "{{ nextcloud_db_user }}"
+      POSTGRES_PASSWORD: "{{ nextcloud_db_password }}"
+    volumes:
+      - nextcloud_db_data:/var/lib/postgresql/data
+    networks:
+      - name: bridge
+  register: nextcloud_db_result
+
+
+- name: Desplegar Nextcloud
+  community.docker.docker_container:
+    name: nextcloud
+    image: nextcloud:latest
+    state: started
+    restart_policy: unless-stopped
+    ports:
+      - "8080:80"
+    env:
+      POSTGRES_DB: "{{ nextcloud_db_name }}"
+      POSTGRES_USER: "{{ nextcloud_db_user }}"
+      POSTGRES_PASSWORD: "{{ nextcloud_db_password }}"
+      POSTGRES_HOST: "nextcloud-db"
+      NEXTCLOUD_ADMIN_USER: "{{ nextcloud_admin_user }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_admin_password }}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "{{ nextcloud_domain }}"
+      OVERWRITEPROTOCOL: "https"
+      OVERWRITEHOST: "{{ nextcloud_domain }}"
+    volumes:
+      - nextcloud_data:/var/www/html
+    depends_on:
+      - nextcloud-db
+    links:
+      - "nextcloud-db:db"
+  register: nextcloud_result
+
+
+- name: Esperar a que Nextcloud esté listo (30 segundos)
+  pause:
+    seconds: 30
+  when: nextcloud_result.changed
+
+
+- name: Obtener token JWT de NPM
+  uri:
+    url: "{{ npm_url }}/api/tokens"
+    method: POST
+    body_format: json
+    body:
+      identity: "{{ npm_username }}"
+      secret: "{{ npm_password }}"
+    validate_certs: false
+  register: npm_token_nextcloud
+
+
+- name: Guardar JWT de NPM
+  set_fact:
+    npm_jwt_nextcloud: "{{ npm_token_nextcloud.json.token }}"
+
+
+- name: Crear proxy host - Nextcloud
+  uri:
+    url: "{{ npm_url }}/api/nginx/proxy-hosts"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ npm_jwt_nextcloud }}"
+    body_format: json
+    body:
+      domain_names:
+        - "{{ nextcloud_domain }}"
+      forward_scheme: "http"
+      forward_host: "localhost"
+      forward_port: 8080
+      certificate_id: 0
+      ssl_forced: true
+    validate_certs: false
+  register: proxy_nextcloud
+
+
+- name: Emitir certificado Let's Encrypt - Nextcloud
+  uri:
+    url: "{{ npm_url }}/api/nginx/certificates"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ npm_jwt_nextcloud }}"
+    body_format: json
+    body:
+      provider: "letsencrypt"
+      domain_names:
+        - "{{ nextcloud_domain }}"
+      email: "{{ cert_email }}"
+      agree_tos: true
+    validate_certs: false
+  register: cert_nextcloud
+
+
+- name: Asociar certificado a host - Nextcloud
+  uri:
+    url: "{{ npm_url }}/api/nginx/proxy-hosts/{{ proxy_nextcloud.json.id }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ npm_jwt_nextcloud }}"
+    body_format: json
+    body:
+      domain_names:
+        - "{{ nextcloud_domain }}"
+      forward_scheme: "http"
+      forward_host: "localhost"
+      forward_port: 8080
+      certificate_id: "{{ cert_nextcloud.json.id }}"
+      ssl_forced: true
+    validate_certs: false
+
+
+- name: Mostrar información de Nextcloud
+  debug:
+    msg:
+      - "✓ Nextcloud desplegado correctamente"
+      - "Acceso en: https://{{ nextcloud_domain }}"
+      - "Usuario: {{ nextcloud_admin_user }}"
+      - "Base de datos PostgreSQL iniciada"

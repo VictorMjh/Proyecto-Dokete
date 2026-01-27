@@ -12,3 +12,4 @@
     - portainer_git
     - ufw
     - npm
+    - nextcloud
