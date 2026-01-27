@@ -1,0 +1,24 @@
+---
+- name: Test Deploy User Connection
+  hosts: doketer
+  gather_facts: no
+  tasks:
+    - name: Ping
+      ping:
+    
+    - name: Check /docker directory
+      stat:
+        path: /docker
+      register: docker_dir
+    
+    - name: Show /docker permissions
+      debug:
+        msg: "Docker dir exists: {{ docker_dir.stat.exists }}, Owner: {{ docker_dir.stat.pw_name }}"
+    
+    - name: Test docker command
+      shell: docker ps
+      register: docker_ps
+    
+    - name: Show docker output
+      debug:
+        msg: "{{ docker_ps.stdout_lines }}"
